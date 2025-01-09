@@ -9,7 +9,7 @@ I collaborated with: [list sunetids here]
 
 I would like to credit/thank these classmates for their help: [list sunetids here]
 
-This lab took me about [n] hours to do. I [did/did not] attend the lab session.
+This lab took me about [n] hours to do. I [did not] attend the lab session.
 
 My secret code from section 2.1 was: 654022
 
