@@ -9,19 +9,14 @@ using namespace std;
 
 void get_URL( const string& host, const string& path )
 {
-    //std::cout << host << " " << path << "\n";
     Address addr = Address(host, "http");
     TCPSocket socket = TCPSocket();
 
-    //socket.listen();
-    //socket.bind(addr);
-    //socket.accept();
-
     socket.connect(addr);
-    //socket.accept();
 
-    //std::string_view msg{"GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n"};
-    std::string_view msg{"GET /nph-hasher/xyzzy HTTP/1.1\r\nHost: cs144.keithw.org\r\nConnection: close\r\n\r\n"};
+    // HTTP request
+    std::string s = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+    std::string_view msg{s};
     socket.write(msg);
 
     std::string buffer = "";
