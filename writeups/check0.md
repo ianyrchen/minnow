@@ -7,7 +7,7 @@ My SUNet ID: ianychen
 
 I collaborated with: [list sunetids here]
 
-I would like to credit/thank these classmates for their help: [list sunetids here]
+I would like to credit/thank these classmates for their help: [allenweng]
 
 This lab took me about [6] hours to do. I [did not] attend the lab session.
 
