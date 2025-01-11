@@ -27,7 +27,7 @@ protected:
   uint64_t capacity_;
   bool error_ {};
 
-  std::deque<char> byte_deque_;
+std::deque<char> byte_deque_;
   uint64_t bytes_popped_;
   uint64_t bytes_pushed_;
   bool closed_;
