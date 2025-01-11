@@ -65,7 +65,7 @@ void Reader::pop( uint64_t len )
 
 bool Reader::is_finished() const
 {
-    return closed_;
+    return closed_ && byte_deque_.empty();
 }
 
 uint64_t Reader::bytes_buffered() const
