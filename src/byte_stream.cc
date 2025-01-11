@@ -12,17 +12,18 @@ ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ),
 void Writer::push( string data )
 {
     if (closed_) {
+        error_ = true;
         cerr << "Cannot write to closed ByteStream\n";
     }
     uint16_t push_len = std::min(capacity_ - byte_deque_.size(), data.length());
     bytes_pushed_ += push_len;
-    std::cout << "push_len " << push_len << std::endl;
+    //std::cout << "push_len " << push_len << std::endl;
     for (uint16_t i = 0; i < push_len; i++) {
         byte_deque_.push_back(data[i]);
     }
     
-    for (auto i : byte_deque_) std::cout << i;
-    std::cout << "\n";
+    //for (auto i : byte_deque_) std::cout << i;
+    //std::cout << "\n";
 
 }
 
@@ -48,23 +49,28 @@ uint64_t Writer::bytes_pushed() const
 
 string_view Reader::peek() const
 {
-    std::cout << "\npeek\n";
+    //std::cout << "\npeek\n";
     
     static std::string next_bytes = "";
-    cout << "next_bytes " << next_bytes << "\n";
+    //cout << "next_bytes " << next_bytes << "\n";
     
     // next_bytes persists through different peek calls so must ensure reset
     if (next_bytes != "")
         next_bytes = "";
     
+    uint16_t count = 0;
     for (char i : byte_deque_) {
         //char byte = byte_deque_.front();
         next_bytes.push_back(i);
         //byte_deque_.pop_front();
         //byte_deque_.push_back(byte);
+        count++;
+        // to pass speed
+        if (count > PEEK_LEN) 
+            break;
     }
     std::string_view out{ next_bytes };
-    std::cout << "\n" << out << "\n";
+    //std::cout << "\n" << out << "\n";
     //next_bytes = "";
     return out;
 
@@ -76,18 +82,18 @@ string_view Reader::peek() const
 void Reader::pop( uint64_t len )
 {
 
-    std::cout << "\npopping len " << len << "\n";
-     for (auto i : byte_deque_) std::cout << i;
-    std::cout<<"\n";
+    //std::cout << "\npopping len " << len << "\n";
+    // for (auto i : byte_deque_) std::cout << i;
+    //std::cout<<"\n";
     uint16_t pop_len = std::min(byte_deque_.size(), len);
     bytes_popped_ += pop_len;
-    std::cout << "\npop_len " << pop_len << "\n";
+    //std::cout << "\npop_len " << pop_len << "\n";
     for (uint16_t i = 0; i < pop_len; i++) {
         byte_deque_.pop_front();
     }
 
-    for (auto i : byte_deque_) std::cout << i;
-    std::cout<<"\n";
+    //for (auto i : byte_deque_) std::cout << i;
+    //std::cout<<"\n";
 }
 
 bool Reader::is_finished() const
