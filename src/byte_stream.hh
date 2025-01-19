@@ -27,13 +27,6 @@ protected:
   uint64_t capacity_;
   bool error_ {};
 
-  /*std::deque<char> byte_deque_;
-  uint64_t bytes_popped_;
-  uint64_t bytes_pushed_;
-  bool closed_;
-  const int PEEK_LEN = 2;
-  */
-
   std::vector<char> circular_;
   uint64_t bytes_popped_;
   uint64_t bytes_pushed_;
