@@ -1,13 +1,13 @@
 Checkpoint 1 Writeup
 ====================
 
-My name: [your name here]
+My name: Ian Chen
 
-My SUNet ID: [your sunetid here]
+My SUNet ID: ianychen
 
-I collaborated with: [list sunetids here]
+I collaborated with: allenweng
 
-I would like to thank/reward these classmates for their help: [list sunetids here]
+I would like to thank/reward these classmates for their help: allenweng
 
 This lab took me about [n] hours to do. I [did/did not] attend the lab session.
 
@@ -15,6 +15,13 @@ I was surprised by or edified to learn that: [describe]
 
 Report from the hands-on component of the lab checkpoint: [include
 information from 2.1(4), and report on your experience in 2.2]
+
+
+killall -QUIT ping returned: 1150/1153 packets, 0% loss, min/avg/ewma/max = 8.921/39.231/28.615/304.275 ms
+end: 8846 packets transmitted, 8833 received, 0.146959% packet loss, time 908518ms
+2.1.4
+a. 
+
 
 Describe Reassembler structure and design. [Describe data structures and
 approach taken. Describe alternative designs considered or tested.
