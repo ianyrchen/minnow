@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <deque>
+#include <vector>
 #include <string>
 #include <string_view>
 
@@ -27,11 +27,20 @@ protected:
   uint64_t capacity_;
   bool error_ {};
 
-  std::deque<char> byte_deque_;
+  /*std::deque<char> byte_deque_;
   uint64_t bytes_popped_;
   uint64_t bytes_pushed_;
   bool closed_;
   const int PEEK_LEN = 2;
+  */
+
+  std::vector<char> circular_;
+  uint64_t bytes_popped_;
+  uint64_t bytes_pushed_;
+  bool closed_;
+
+  uint64_t read_idx_;
+  uint64_t write_idx_;
 };
 
 class Writer : public ByteStream
