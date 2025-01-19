@@ -1,5 +1,5 @@
 #include "socket.hh"
-
+#include <iostream>
 using namespace std;
 
 class RawSocket : public DatagramSocket
@@ -15,6 +15,7 @@ auto zeroes( auto n )
 
 int main()
 {
+  string payload = "hi hi";
   // construct an Internet or user datagram here, and send using the RawSocket as in the Jan. 10 lecture
   RawSocket sock;
 
@@ -29,13 +30,13 @@ int main()
   datagram += char( 10 );
   datagram += char( 144 );
   datagram += char( 0 );
-  datagram += char( 8 );
+  datagram += char( 48 );
 
   datagram += payload;
 
-  sock.sendto( Address { "1" }, datagram );
+  sock.sendto( Address { "10.144.0.0" }, datagram );
 
-
+  cout << datagram << endl;
 
   // send UDP
   datagram = "";
@@ -49,16 +50,29 @@ int main()
   datagram += char( 10 );
   datagram += char( 144 );
   datagram += char( 0 );
-  datagram += char( 8 );
+  datagram += char( 48 );
 
   // UDP
   string user_payload = "hi";
-  datagram += char (0);
-  datagram += char (user_payload.length() + 8);
 
+  // source port
+  datagram += char(0);
+  datagram += char(1);
+
+  // destination port
+  datagram += char(4);
+  datagram += char(0);
+
+  // length
+  datagram += char(0);
+  datagram += char(user_payload.length() + 8);
+  // checksum
   datagram += string( 2,0 );
+  // payload
   datagram += user_payload;
 
-  sock.sendto( Address { "1" }, datagram );
+  sock.sendto( Address { "10.144.0.0" }, datagram );
+  cout << datagram << endl;
+
   return 0;
 }
