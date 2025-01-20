@@ -1,7 +1,7 @@
 #pragma once
 
 #include "byte_stream.hh"
-#include <map>
+#include <unordered_map>
 
 class Reassembler
 {
@@ -45,7 +45,7 @@ public:
 private:
   ByteStream output_;
 
-  std::map<uint64_t, char> stream_;
+  std::unordered_map<uint64_t, char> stream_;
   bool seen_finished_ = false;
   uint64_t finished_byte_ = 0;
   uint64_t next_idx_needed_ = 0;
