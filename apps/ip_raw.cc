@@ -26,7 +26,7 @@ int main()
   datagram += char( 64 );  // TTL
   datagram += char( 5 );   // protocol
   datagram += zeroes( 6 ); // checksum + src address
-  //10.144.0.8
+  // 10.144.0.8
   datagram += char( 10 );
   datagram += char( 144 );
   datagram += char( 0 );
@@ -44,9 +44,9 @@ int main()
   datagram += zeroes( 7 );
 
   datagram += char( 64 );  // TTL
-  datagram += char( 17 );   // protocol
+  datagram += char( 17 );  // protocol
   datagram += zeroes( 6 ); // checksum + src address
-  //10.144.0.8
+  // 10.144.0.8
   datagram += char( 10 );
   datagram += char( 144 );
   datagram += char( 0 );
@@ -56,18 +56,18 @@ int main()
   string user_payload = "hi";
 
   // source port
-  datagram += char(0);
-  datagram += char(1);
+  datagram += char( 0 );
+  datagram += char( 1 );
 
   // destination port
-  datagram += char(4);
-  datagram += char(0);
+  datagram += char( 4 );
+  datagram += char( 0 );
 
   // length
-  datagram += char(0);
-  datagram += char(user_payload.length() + 8);
+  datagram += char( 0 );
+  datagram += char( user_payload.length() + 8 );
   // checksum
-  datagram += string( 2,0 );
+  datagram += string( 2, 0 );
   // payload
   datagram += user_payload;
 

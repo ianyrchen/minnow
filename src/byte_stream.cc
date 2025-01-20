@@ -4,15 +4,21 @@
 using namespace std;
 
 ByteStream::ByteStream( uint64_t capacity )
-  : capacity_( capacity ), circular_(capacity, '\0'), bytes_popped_(0),
-    bytes_pushed_(0), closed_(false), read_idx_(0), write_idx_(0) {}
+  : capacity_( capacity )
+  , circular_( capacity, '\0' )
+  , bytes_popped_( 0 )
+  , bytes_pushed_( 0 )
+  , closed_( false )
+  , read_idx_( 0 )
+  , write_idx_( 0 )
+{}
 
 void Writer::push( string data )
 {
-  if ( closed_ || capacity_ - (bytes_pushed_ - bytes_popped_) == 0 ) {
+  if ( closed_ || capacity_ - ( bytes_pushed_ - bytes_popped_ ) == 0 ) {
     return;
   }
-  uint16_t push_len = std::min( capacity_ - (bytes_pushed_ - bytes_popped_), data.length() );
+  uint16_t push_len = std::min( capacity_ - ( bytes_pushed_ - bytes_popped_ ), data.length() );
   bytes_pushed_ += push_len;
   for ( uint16_t i = 0; i < push_len; i++ ) {
     circular_[write_idx_] = data[i];
@@ -33,7 +39,7 @@ bool Writer::is_closed() const
 
 uint64_t Writer::available_capacity() const
 {
-  return capacity_ - (bytes_pushed_ - bytes_popped_);
+  return capacity_ - ( bytes_pushed_ - bytes_popped_ );
 }
 
 uint64_t Writer::bytes_pushed() const
@@ -58,7 +64,7 @@ void Reader::pop( uint64_t len )
 {
   uint16_t pop_len = std::min( bytes_buffered(), len );
   bytes_popped_ += pop_len;
-  for (uint16_t i = 0; i < pop_len; i++) {
+  for ( uint16_t i = 0; i < pop_len; i++ ) {
     read_idx_++;
     read_idx_ %= capacity_;
   }
@@ -71,7 +77,7 @@ bool Reader::is_finished() const
 
 uint64_t Reader::bytes_buffered() const
 {
-    return bytes_pushed_ - bytes_popped_;
+  return bytes_pushed_ - bytes_popped_;
 }
 
 uint64_t Reader::bytes_popped() const

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 #include <string>
 #include <string_view>
+#include <vector>
 
 class Reader;
 class Writer;
