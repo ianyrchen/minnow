@@ -46,7 +46,7 @@ private:
   ByteStream output_;
 
   std::map<uint64_t, char> stream_;
-  bool closed_ = false;
+  bool seen_finished_ = false;
   uint64_t finished_byte_ = 0;
   uint64_t next_idx_needed_ = 0;
 };
