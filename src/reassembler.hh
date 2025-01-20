@@ -47,5 +47,6 @@ private:
 
   std::map<uint64_t, char> stream_;
   bool closed_ = false;
-  uint64_t bytes_pushed_to_output_ = 0;
+  uint64_t finished_byte_ = 0;
+  uint64_t next_idx_needed_ = 0;
 };
