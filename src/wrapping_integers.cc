@@ -20,31 +20,16 @@ uint64_t Wrap32::unwrap( Wrap32 zero_point, uint64_t checkpoint ) const
   }
   uint64_t rem = checkpoint % (1ULL << 32);
   uint64_t head = checkpoint - rem;
-  
+  uint64_t result = head + abs_seq_no;
   if (rem > abs_seq_no) {
-    if (rem - abs_seq_no < (1ULL << 31)) {
-        return head + abs_seq_no;
-    }
-    else {
-        if (head + abs_seq_no < UINT64_MAX - (1ULL << 32)) {
-            return head + abs_seq_no + (1ULL << 32);
-        }
-        else {
-            return head + abs_seq_no;
-        }
+    if (rem - abs_seq_no >= (1ULL << 31) && result < UINT64_MAX - (1ULL << 32)) {
+        return head + abs_seq_no + (1ULL << 32);
     }
   }
   else {
-    if (abs_seq_no - rem < (1ULL << 31)) {
-        return head + abs_seq_no;
-    }
-    else {
-        if (head + abs_seq_no >= (1ULL << 32)) {
-            return head + abs_seq_no - (1ULL << 32);
-        }
-        else {
-            return head + abs_seq_no;
-        }
+    if (abs_seq_no - rem >= (1ULL << 31) && result >= (1ULL << 32)) {
+        return head + abs_seq_no - (1ULL << 32);
     }
   }
+  return result;
 }
