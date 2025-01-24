@@ -1,15 +1,15 @@
 Checkpoint 2 Writeup
 ====================
 
-My name: [your name here]
+My name: Ian Chen
 
-My SUNet ID: [your sunetid here]
+My SUNet ID: ianychen
 
-I collaborated with: [list sunetids here]
+I collaborated with: tt105241
 
-I would like to thank/reward these classmates for their help: [list sunetids here]
+I would like to thank/reward these classmates for their help: tt105241
 
-This lab took me about [n] hours to do. I [did/did not] attend the lab session.
+This lab took me about [n] hours to do. I did attend the lab session.
 
 Describe Wrap32 and TCPReceiver structure and design. [Describe data
 structures and approach taken. Describe alternative designs considered
