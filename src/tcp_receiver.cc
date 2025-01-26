@@ -2,6 +2,9 @@
 #include "debug.hh"
 #include <iostream>
 
+#include <cstdint>
+#include <cstdlib>
+
 using namespace std;
 
 void TCPReceiver::receive( TCPSenderMessage message )
@@ -33,5 +36,7 @@ struct TCPReceiverMessage
     if (isn_ != nullopt)
         msg.ackno = Wrap32::wrap(writer.bytes_pushed() + 1 + fin_, *isn_);
     //debug( "{}", msg.ackno.has_value());
+    if (writer.available_capacity() > UINT16_MAX) 
+        msg.window_size = UINT16_MAX;
     return msg;
 }
