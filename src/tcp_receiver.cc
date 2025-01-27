@@ -11,6 +11,8 @@ void TCPReceiver::receive( TCPSenderMessage message )
 {
     const Writer& writer = reassembler_.writer();
     rst_err_ = message.RST;
+    if (message.RST) 
+        reader().set_error();
 
     if (message.SYN) {
         isn_ = Wrap32(message.seqno);
@@ -22,6 +24,11 @@ void TCPReceiver::receive( TCPSenderMessage message )
     
     reassembler_.insert(first_index - !message.SYN, message.payload, message.FIN); // reassembler expects 0 as first data byte
     //debug( "first_index: {}, payload: {}", first_index, message.payload);
+
+    if (writer.has_error())
+        rst_err_ = true;
+    //void set_error() { error_ = true; };       // Signal that the stream suffered an error.
+  //bool has_error() const { return error_; }; // Has the stream had an error?
 }
 
 TCPReceiverMessage TCPReceiver::send() const
@@ -42,5 +49,9 @@ struct TCPReceiverMessage
         msg.ackno = Wrap32::wrap(writer.bytes_pushed() + 1 + writer.is_closed(), *isn_);
     if (writer.available_capacity() > UINT16_MAX) 
         msg.window_size = UINT16_MAX;
+    if (writer.has_error()) {
+        msg.RST = true;
+    }
+    debug("{} {}", writer.has_error(), msg.RST);
     return msg;
 }
