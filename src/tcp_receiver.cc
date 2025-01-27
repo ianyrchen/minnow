@@ -18,10 +18,10 @@ void TCPReceiver::receive( TCPSenderMessage message )
     }    
     
     uint64_t first_index = message.seqno.unwrap(*isn_, writer.bytes_pushed() );
-    debug( "writer bytes pushed: {}, reassembler count bytes pending: {}", writer.bytes_pushed(), reassembler_.count_bytes_pending());
+    //debug( "writer bytes pushed: {}, reassembler count bytes pending: {}", writer.bytes_pushed(), reassembler_.count_bytes_pending());
 
     reassembler_.insert(first_index - !message.SYN, message.payload, message.FIN); // reassembler expects 0 as first data byte
-    debug( "first_index: {}, payload: {}", first_index, message.payload);
+    //debug( "first_index: {}, payload: {}", first_index, message.payload);
 
 }
 
@@ -37,7 +37,7 @@ struct TCPReceiverMessage
 };*/
     const Writer& writer = reassembler_.writer();
     TCPReceiverMessage msg = {{}, static_cast<uint16_t>(writer.available_capacity()), rst_err_};
-    debug( "{}", writer.bytes_pushed());
+    //debug( "{}", writer.bytes_pushed());
 
     if (isn_ != nullopt)
         msg.ackno = Wrap32::wrap(writer.bytes_pushed() + 1 + fin_, *isn_);

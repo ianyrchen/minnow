@@ -27,13 +27,15 @@ protected:
   uint64_t capacity_;
   bool error_ {};
 
-  std::vector<char> circular_;
-  uint64_t bytes_popped_;
-  uint64_t bytes_pushed_;
+  std::string buffer_ {};
+
+  //std::vector<char> circular_;
+  //uint64_t bytes_popped_;
+  uint64_t bytes_pushed_ {};
   bool closed_;
 
-  uint64_t read_idx_;
-  uint64_t write_idx_;
+  //uint64_t read_idx_;
+  //uint64_t write_idx_;
 };
 
 class Writer : public ByteStream
