@@ -36,19 +36,23 @@ void TCPSender::push( const TransmitFunction& transmit )
         next_seqno_to_send_ = next_seqno_to_send_ + msg.sequence_length();
         return;
     }
+    
+    
+    
 
-    while (reader().bytes_buffered() > 0 && 
-           outstanding_segments_.size() < receiver_window_size_) {
-
-        uint16_t payload_size = std::min(uint16_t(TCPConfig::MAX_PAYLOAD_SIZE), receiver_window_size_);
+    //while (reader().bytes_buffered() > 0 && 
+           //outstanding_segments_.size() < receiver_window_size_) {
+    while (reader().bytes_buffered() > 0 && receiver_window_size_ > 0) {
+        uint16_t max_payload_size = std::min(uint16_t(TCPConfig::MAX_PAYLOAD_SIZE), receiver_window_size_);
         debug("payload sizes: {}, {}", uint16_t(TCPConfig::MAX_PAYLOAD_SIZE), receiver_window_size_);
-        //debug( "Payload size: {}", payload_size );
 
-        std::string_view payload = reader().peek();
-        if (payload.size() > payload_size) {
-            payload = payload.substr(0, payload_size);  // limit payload size
-        }
+        std::string_view payload = reader().peek();        
+        max_payload_size = min(uint16_t(payload.size()), max_payload_size);
+        payload = payload.substr(0, max_payload_size);  // limit payload size
 
+        receiver_window_size_ -= payload.size();
+        
+        debug("payload {}", string(payload));
         TCPSenderMessage msg;
         msg.seqno = next_seqno_to_send_;
         msg.payload = std::string(payload); 
