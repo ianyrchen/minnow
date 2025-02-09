@@ -57,13 +57,25 @@ void TCPSender::push( const TransmitFunction& transmit )
         msg.seqno = next_seqno_to_send_;
         msg.payload = std::string(payload); 
         msg.SYN = (next_seqno_to_send_ == isn_);
-        msg.FIN = reader().is_finished() && (reader().bytes_buffered() == 0);
-        
+        msg.FIN = !sent_fin_ && writer().is_closed() && (reader().bytes_buffered() == payload.size()) && receiver_window_size_ > 0;
+        debug("fin? {} {} {}", writer().is_closed(), (reader().bytes_buffered() == payload.size()), receiver_window_size_ > 0);
         transmit(msg);
         outstanding_segments_.push_back({msg, current_RTO_});
         next_seqno_to_send_ = next_seqno_to_send_ + msg.sequence_length();
         
         reader().pop(payload.size());
+        sent_fin_ = msg.FIN;
+    }
+
+    // send fin flag msg
+    if (reader().is_finished() && receiver_window_size_ > 0 && !sent_fin_) {
+        debug("rec window size {}", receiver_window_size_);
+        TCPSenderMessage fin_msg = make_empty_message();
+        fin_msg.FIN = true;
+        transmit(fin_msg);
+        outstanding_segments_.push_back({fin_msg, current_RTO_});
+        next_seqno_to_send_ = next_seqno_to_send_ + 1;
+        sent_fin_ = true;
     }
 }
 
@@ -90,6 +102,7 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
                    outstanding_segments_.front().message_.seqno.unwrap(isn_, received_ackno_) < received_ackno_) {
                 outstanding_segments_.pop_front();
             }
+
         }
         receiver_window_size_ = msg.window_size;
         debug("now window size {}", receiver_window_size_);

@@ -14,7 +14,8 @@ public:
   TCPSender( ByteStream&& input, Wrap32 isn, uint64_t initial_RTO_ms )
     : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms ),
       consecutive_retransmissions_( 0 ), received_ackno_( 0 ), receiver_window_size_( 1 ), 
-      next_seqno_to_send_( isn ), current_RTO_( initial_RTO_ms ), time_since_last_send_( 0 ), outstanding_segments_()
+      next_seqno_to_send_( isn ), current_RTO_( initial_RTO_ms ), time_since_last_send_( 0 ), 
+      outstanding_segments_(), sent_fin_( false )
   {}
 
   /* Generate an empty TCPSenderMessage */
@@ -65,5 +66,5 @@ private:
   uint64_t current_RTO_;               
   uint64_t time_since_last_send_; 
   std::deque<Segment> outstanding_segments_; 
-  
+  bool sent_fin_;
 };
