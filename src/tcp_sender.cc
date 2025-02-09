@@ -91,7 +91,7 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
     debug("received");
    if (msg.ackno.has_value()) {
         uint64_t new_ackno = msg.ackno->unwrap(isn_, received_ackno_);
-        if (new_ackno > received_ackno_) {
+        if (new_ackno > received_ackno_ && new_ackno <= next_seqno_to_send_.unwrap(isn_, received_ackno_)) {
             received_ackno_ = new_ackno;
             consecutive_retransmissions_ = 0;
             current_RTO_ = initial_RTO_ms_;
@@ -117,7 +117,7 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
         return;
     }
 
-    // if enough time passred, transmit first outstanding segment
+    // if enough time passed, transmit first outstanding segment
     if (time_since_last_send_ >= current_RTO_) {
         transmit(outstanding_segments_.front().message_);
 
