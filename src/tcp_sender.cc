@@ -29,11 +29,12 @@ void TCPSender::push( const TransmitFunction& transmit )
         msg.seqno = next_seqno_to_send_;
         msg.payload = "";  
         msg.SYN = true;    
-        msg.FIN = false;   
+        msg.FIN = writer().is_closed();   
         
         transmit(msg);
         outstanding_segments_.push_back({msg, current_RTO_});
         next_seqno_to_send_ = next_seqno_to_send_ + msg.sequence_length();
+        sent_fin_ = msg.FIN;
         return;
     }
     
