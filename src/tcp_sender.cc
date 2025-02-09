@@ -22,12 +22,28 @@ uint64_t TCPSender::consecutive_retransmissions() const
 
 void TCPSender::push( const TransmitFunction& transmit )
 {
-    //debug("in push");
+    debug("in push");
+
+    if (next_seqno_to_send_ == isn_) {
+        TCPSenderMessage msg;
+        msg.seqno = next_seqno_to_send_;
+        msg.payload = "";  
+        msg.SYN = true;    
+        msg.FIN = false;   
+        
+        transmit(msg);
+        outstanding_segments_.push_back({msg, current_RTO_});
+        next_seqno_to_send_ = next_seqno_to_send_ + msg.sequence_length();
+        return;
+    }
+
     while (reader().bytes_buffered() > 0 && 
            outstanding_segments_.size() < receiver_window_size_) {
 
         uint16_t payload_size = std::min(uint16_t(TCPConfig::MAX_PAYLOAD_SIZE), receiver_window_size_);
-        
+        debug("payload sizes: {}, {}", uint16_t(TCPConfig::MAX_PAYLOAD_SIZE), receiver_window_size_);
+        //debug( "Payload size: {}", payload_size );
+
         std::string_view payload = reader().peek();
         if (payload.size() > payload_size) {
             payload = payload.substr(0, payload_size);  // limit payload size
@@ -56,6 +72,7 @@ TCPSenderMessage TCPSender::make_empty_message() const
 
 void TCPSender::receive( const TCPReceiverMessage& msg )
 {
+    debug("received");
    if (msg.ackno.has_value()) {
         uint64_t new_ackno = msg.ackno->unwrap(isn_, received_ackno_);
         if (new_ackno > received_ackno_) {
@@ -70,6 +87,8 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
                 outstanding_segments_.pop_front();
             }
         }
+        receiver_window_size_ = msg.window_size;
+        debug("now window size {}", receiver_window_size_);
    }
 }
 
