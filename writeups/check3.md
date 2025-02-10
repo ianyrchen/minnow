@@ -100,6 +100,8 @@ It was difficult to implement the push function elegantly.
 Remaining Bugs:
 Several of the send_extra tests still do not pass, but I was able to 
 send extremely large files during the hands-on-component with 0 loss.
+Specifically, my code is not correctly sending the FIN flag in all cases.
+This is also why I considered switching to an individual byte approach.
 
 - Optional: I had unexpected difficulty with: [describe]
 

@@ -4,18 +4,26 @@
 #include "tcp_receiver_message.hh"
 #include "tcp_sender_message.hh"
 
-#include <functional>
 #include <deque>
+#include <functional>
 
 class TCPSender
 {
 public:
   /* Construct TCP sender with given default Retransmission Timeout and possible ISN */
   TCPSender( ByteStream&& input, Wrap32 isn, uint64_t initial_RTO_ms )
-    : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms ),
-      consecutive_retransmissions_( 0 ), received_ackno_( 0 ),  
-      next_seqno_to_send_( isn ), current_RTO_( initial_RTO_ms ), time_since_last_send_( 0 ), 
-      outstanding_segments_(), sent_fin_( false ), sent_syn_( false ), timer_on_( false )
+    : input_( std::move( input ) )
+    , isn_( isn )
+    , initial_RTO_ms_( initial_RTO_ms )
+    , consecutive_retransmissions_( 0 )
+    , received_ackno_( 0 )
+    , next_seqno_to_send_( isn )
+    , current_RTO_( initial_RTO_ms )
+    , time_since_last_send_( 0 )
+    , outstanding_segments_()
+    , sent_fin_( false )
+    , sent_syn_( false )
+    , timer_on_( false )
   {}
 
   /* Generate an empty TCPSenderMessage */
@@ -47,23 +55,21 @@ private:
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
   uint64_t consecutive_retransmissions_;
-  
-  struct Segment {
+
+  struct Segment
+  {
     TCPSenderMessage message_;
     uint64_t time_left_;
   };
 
-  uint64_t received_ackno_;    
-  std::optional<uint16_t> receiver_window_size_ {}; 
+  uint64_t received_ackno_;
+  std::optional<uint16_t> receiver_window_size_ {};
 
-  Wrap32 next_seqno_to_send_;  
-  uint64_t current_RTO_;               
-  uint64_t time_since_last_send_; 
-  std::deque<Segment> outstanding_segments_; 
+  Wrap32 next_seqno_to_send_;
+  uint64_t current_RTO_;
+  uint64_t time_since_last_send_;
+  std::deque<Segment> outstanding_segments_;
   bool sent_fin_;
   bool sent_syn_;
   bool timer_on_;
 };
-
-
-
