@@ -61,6 +61,7 @@ void TCPSender::push( const TransmitFunction& transmit )
         msg.FIN = !sent_fin_ && writer().is_closed() && (reader().bytes_buffered() == payload.size()) && receiver_window_size_ > 0;
         debug("fin? {} {} {}", writer().is_closed(), (reader().bytes_buffered() == payload.size()), receiver_window_size_ > 0);
         transmit(msg);
+        time_since_last_send_ = 0;
         outstanding_segments_.push_back({msg, current_RTO_});
         next_seqno_to_send_ = next_seqno_to_send_ + msg.sequence_length();
         
@@ -112,6 +113,8 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
 
 void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& transmit )
 {
+    debug("ms_since_last_tick {}", ms_since_last_tick);
+    debug("time since last send {}", time_since_last_send_);
     time_since_last_send_ += ms_since_last_tick;
 
     if (outstanding_segments_.empty()) {
@@ -119,6 +122,7 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
     }
 
     // if enough time passed, transmit first outstanding segment
+    debug("current rto {}", current_RTO_);
     if (time_since_last_send_ >= current_RTO_) {
         transmit(outstanding_segments_.front().message_);
 
