@@ -84,11 +84,10 @@ private:
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
 
-
-    // unordered_map for raw ip address to { ethernet address, time in ms left }
-    std::unordered_map<uint32_t, std::pair<EthernetAddress, size_t>> ip_ethernet_map_ {};
-    // unordered map for dgrams that we don't know ethernet of yet
-    std::unordered_map<uint32_t, std::queue<InternetDatagram>> not_sent_ {};
-    // dont send 2nd ARP request about same IP address within 5 seconds
-    std::unordered_map<uint32_t, size_t> arp_request_timer_ {};
+  // unordered_map for raw ip address to { ethernet address, time in ms left }
+  std::unordered_map<uint32_t, std::pair<EthernetAddress, size_t>> ip_ethernet_map_ {};
+  // unordered map for dgrams that we don't know ethernet of yet
+  std::unordered_map<uint32_t, std::queue<InternetDatagram>> not_sent_ {};
+  // dont send 2nd ARP request about same IP address within 5 seconds
+  std::unordered_map<uint32_t, size_t> arp_request_timer_ {};
 };
