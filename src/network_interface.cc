@@ -34,13 +34,9 @@ void NetworkInterface::send_datagram( const InternetDatagram& dgram, const Addre
 {
     uint32_t raw_next_hop = next_hop.ipv4_numeric();
     if (ip_ethernet_map_.contains(raw_next_hop)) {
-        /*
-        send it right away. Create an Ethernet frame (with type = EthernetHeader::TYPE IPv4),
-        set the payload to be the serialized datagram, and set the source and destination addresses
-        */
+        // send the serialized datagram
+        
         EthernetFrame frame;
-
-        // make frame
         frame.payload = serialize( dgram );
 
         EthernetHeader header;
@@ -53,21 +49,13 @@ void NetworkInterface::send_datagram( const InternetDatagram& dgram, const Addre
         transmit(frame);
     }
     else {
-        /*
-        broadcast an ARP request for the next hop’s Ethernet address, and queue 
-        the IP datagram so it can be sent after the ARP reply is received.
-Except: You don’t want to flood the network with ARP requests. If the network
-interface already sent an ARP request about the same IP address in the last
-five seconds, don’t send a second request—just wait for a reply to the first one.
-Again, queue the datagram until you learn the destination Ethernet address.
-        */
-        
+        // broadcast an ARP request for the next hop’s Ethernet address
+        // queue IP datagram, send it after the ARP reply is received
         if (arp_request_timer_[raw_next_hop] == 0) {
             ARPMessage request;
             request.opcode = 1;
             request.sender_ethernet_address = ethernet_address_;
             request.sender_ip_address = ip_address_.ipv4_numeric();
-            //request.target_ethernet_address = ETHERNET_BROADCAST;
             request.target_ip_address = next_hop.ipv4_numeric();
 
             EthernetFrame frame;
@@ -82,7 +70,7 @@ Again, queue the datagram until you learn the destination Ethernet address.
             
             transmit(frame);
 
-            arp_request_timer_[raw_next_hop] = 5000; // 5 sec
+            arp_request_timer_[raw_next_hop] = 5000; // 5 sec timer
         }
         not_sent_[raw_next_hop].push(dgram);
     }
@@ -107,18 +95,13 @@ void NetworkInterface::recv_frame( EthernetFrame frame )
         // ARP
         ARPMessage arp_msg;
         if ( parse( arp_msg, frame.payload ) ) {
-            /*
-            remember the mapping between the sender’s IP address and Ethernet address for
-            30 seconds. (Learn mappings from both requests and replies.) In addition, if it’s
-            an ARP request asking for our IP address, send an appropriate ARP reply.
-            */
-
+            // remember the mapping for 30 secondsIn addition
             Address sender_addr = Address::from_ipv4_numeric(arp_msg.sender_ip_address);
             uint32_t raw_sender_addr = sender_addr.ipv4_numeric();
             ip_ethernet_map_[raw_sender_addr] = { arp_msg.sender_ethernet_address, 30000 };
 
-            // request 
-            if (arp_msg.opcode == 1) {
+            // request, send ARP reply
+            if (arp_msg.opcode == 1 && arp_msg.target_ip_address == ip_address_.ipv4_numeric()) {
                 ARPMessage reply;
                 reply.opcode = 2;
                 reply.sender_ethernet_address = ethernet_address_;
@@ -143,9 +126,8 @@ void NetworkInterface::recv_frame( EthernetFrame frame )
                 while (!not_sent_[raw_sender_addr].empty()) {
                     InternetDatagram cur = not_sent_[raw_sender_addr].front();
                     not_sent_[raw_sender_addr].pop();
+                    
                     EthernetFrame out_frame;
-
-                    // make frame
                     out_frame.payload = serialize( cur );
 
                     EthernetHeader header;
@@ -154,7 +136,6 @@ void NetworkInterface::recv_frame( EthernetFrame frame )
                     header.type = 0x800; // IPv4
 
                     out_frame.header = header;
-
                     transmit(out_frame);
                 }
             }
@@ -171,7 +152,7 @@ void NetworkInterface::tick( const size_t ms_since_last_tick )
             expired.push_back(i.first);
         }
         else {
-            i.second.second -= ms_since_last_tick;
+            ip_ethernet_map_[i.first].second -= ms_since_last_tick;
         }
     }
     for (auto addr : expired) {
@@ -180,10 +161,13 @@ void NetworkInterface::tick( const size_t ms_since_last_tick )
 
     for (auto i : arp_request_timer_) {
         if (i.second <= ms_since_last_tick) {
-            i.second = 0;
+            arp_request_timer_[i.first] = 0;
+            // need to resend now? no, should drop it according to ed
+            if (!not_sent_[i.first].empty())
+                not_sent_[i.first].pop();
         }
         else {
-            i.second -= ms_since_last_tick;
+            arp_request_timer_[i.first] -= ms_since_last_tick;
         }
     }
 }
