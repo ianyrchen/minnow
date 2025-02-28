@@ -1,9 +1,9 @@
 Checkpoint 6 Writeup
 ====================
 
-My name: [your name here]
+My name: Ian Chen
 
-My SUNet ID: [your sunetid here]
+My SUNet ID: ianychen
 
 I collaborated with: [list sunetids here]
 
