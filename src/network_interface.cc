@@ -118,23 +118,24 @@ void NetworkInterface::recv_frame( EthernetFrame frame )
         out_frame.header = header;
 
         transmit( out_frame );
-      } else {
-        // reply, see if there's any queued stuff we need to send out
-        while ( !not_sent_[raw_sender_addr].empty() ) {
-          InternetDatagram cur = not_sent_[raw_sender_addr].front();
-          not_sent_[raw_sender_addr].pop();
 
-          EthernetFrame out_frame;
-          out_frame.payload = serialize( cur );
+      } 
+      
+      // see if there's any queued stuff we need to send out
+      while ( !not_sent_[raw_sender_addr].empty() ) {
+        InternetDatagram cur = not_sent_[raw_sender_addr].front();
+        not_sent_[raw_sender_addr].pop();
 
-          EthernetHeader header;
-          header.dst = ip_ethernet_map_[raw_sender_addr].first;
-          header.src = ethernet_address_;
-          header.type = 0x800; // IPv4
+        EthernetFrame out_frame;
+        out_frame.payload = serialize( cur );
 
-          out_frame.header = header;
-          transmit( out_frame );
-        }
+        EthernetHeader header;
+        header.dst = ip_ethernet_map_[raw_sender_addr].first;
+        header.src = ethernet_address_;
+        header.type = 0x800; // IPv4
+
+        out_frame.header = header;
+        transmit( out_frame );
       }
     }
   }
