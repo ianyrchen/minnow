@@ -24,6 +24,9 @@ void Router::add_route( const uint32_t route_prefix,
                         const optional<Address> next_hop,
                         const size_t interface_num )
 {
+  cerr << "DEBUG: adding route " << Address::from_ipv4_numeric( route_prefix ).ip() << "/"
+    << static_cast<int>( prefix_length ) << " => " << ( next_hop.has_value() ? next_hop->ip() : "(direct)" )
+    << " on interface " << interface_num << "\n";
   Route r;
   r.route_prefix = route_prefix;
   r.prefix_length = prefix_length;
