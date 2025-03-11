@@ -118,9 +118,8 @@ void NetworkInterface::recv_frame( EthernetFrame frame )
         out_frame.header = header;
 
         transmit( out_frame );
+      }
 
-      } 
-      
       // see if there's any queued stuff we need to send out
       while ( !not_sent_[raw_sender_addr].empty() ) {
         InternetDatagram cur = not_sent_[raw_sender_addr].front();
